@@ -1,0 +1,19 @@
+<a href="/groups/{{groupID}}">
+    <button>Go back</button>
+</a>
+
+<section>
+    {{> groupDetailedPartial this}}
+</section>
+
+<form method="GET" action="/groups/{{id}}/events">
+    <input type="submit" value="See events">
+</form>
+
+<form method="GET" action="/groups/{{id}}/update">
+    <input type="submit" value="Edit">
+</form>
+
+<form method="POST" action="/groups/{{id}}/delete">
+    <input type="submit" value="Delete">
+</form>

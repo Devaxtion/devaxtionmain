@@ -1,0 +1,11 @@
+<a href="/groups/{{groupID}}/events">
+    <button>Go back</button>
+</a>
+
+<section>
+    {{> eventDetailedPartial this}}
+</section>
+
+<form method="POST" action="/groups/{{groupID}}/events/{{id}}/delete">
+    <input type="submit" value="Remove">
+</form>

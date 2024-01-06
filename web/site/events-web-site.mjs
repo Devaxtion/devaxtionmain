@@ -38,23 +38,23 @@ export default function(eventServices) {
     async function _getPopularEvents(req, rsp, size, page) {
 
         // Get an array of the popular events
-        const popularEvents = await eventServices.getPopularEvents(size, page)
+        const events = await eventServices.getPopularEvents(size, page)
 
         // Success
-        rsp.json(popularEvents)
+        rsp.render('events-popular', {events, size, page})
 
     }
 
     async function _searchEvents(req, rsp, size, page) {
 
         // Gets the name to search from the parameters
-        const name = req.params.name
+        const name = req.query.name
 
-        // Gets an array of the events found with that name
+        // Search the events if name was given
         const events = await eventServices.searchEvents(size, page, name)
 
         // Success
-        rsp.json(events)
+        rsp.render('events-search', {events, name, size, page})
 
     }
 

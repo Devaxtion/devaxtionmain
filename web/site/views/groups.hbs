@@ -1,0 +1,30 @@
+<a href="/">
+    <button>Go back</button>
+</a>
+
+<h1>All groups</h1>
+
+<h2>Create a new group:</h2>
+<form method="POST" action="/groups/create">
+    <p>Name: <input type="text" name="name"></p>
+    <p>Description: <input type="text" name="description"></p>
+
+    <input type="submit" value="Create">
+
+</form>
+
+<hr>
+
+<section>
+    {{#each groups}}
+        <section>
+
+            {{> groupPartial this}}
+            <a href="/groups/{{id}}/">
+                <button>See details</button>
+            </a>
+            <hr>
+
+        </section>
+    {{/each}}
+</section>

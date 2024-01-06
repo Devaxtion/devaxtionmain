@@ -1,39 +1,52 @@
 import crypto from 'node:crypto'
-import { users } from '../seca-data-mem.mjs'
+import errors from '../common/errors.mjs'
 
+export default function (usersData) {
+    
+    if(!usersData)
+        throw errors.INVALID_ARGUMENT("usersData")
 
-let nextID = users.length + 1
-
-export function createUser(userName) {
-
-    // Finds the user index with the given username
-    const userIdx = users.findIndex(user => user.username == userName)
-
-    // Error: If a user with username already exists, returns undefined
-    if (userIdx != -1) return
-
-    // Creates the new user
-    const newUser = {
-        id: nextID++,
-        username: userName,
-        token: crypto.randomUUID()
+    return {
+        createUser,
+        getUserID
     }
 
-    // Puts the new user into the array
-    users.push(newUser)
+    async function createUser(username) {
 
-    // Returns the user
-    return newUser
-    
-}
+        // Error: Username isn't a string
+        if(typeof username != 'string')
+            throw errors.INVALID_ARGUMENT("Username")
 
-export function getUserID(token) {
+        // Checks if username is taken or not
+        const isUsernameTaken = await usersData.isUsernameTaken(username)
 
-    // Tries to find a user with that token
-    const user = users.find(user => user.token == token)
+        // Error: User already exists
+        if(isUsernameTaken == true)
+            throw errors.ALREADY_EXISTS("User")
 
-    // Success
-    if(user)
-        return user.id
+        // Creates the new user
+        const newUser = {
+            username: username,
+            token: crypto.randomUUID()
+        }
+
+        // Success
+        return await usersData.createUser(newUser)
+        
+    }
+
+    async function getUserID(token) {
+
+        // Tries to find a user with that token
+        const user = await usersData.getUserID(token)
+
+        // Error: User not found
+        if(!user)
+            throw errors.USER_NOT_FOUND()
+
+        // Success
+        return user
+
+    }
 
 }

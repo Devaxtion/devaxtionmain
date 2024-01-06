@@ -1,175 +1,168 @@
-import * as userServices from './user-services.mjs'
-import { groups } from '../seca-data-mem.mjs'
+import errors from '../common/errors.mjs'
 
+export default function (userServices, groupsData) {
+    if(!userServices)
+        throw errors.INVALID_ARGUMENT("userServices")
+    if(!groupsData)
+        throw errors.INVALID_ARGUMENT("groupsData")
 
-let nextGroupID = groups.length + 1
+    return {
+        getAllGroups,
+        createGroup,
+        getGroupDetails: processGroup(_getGroupDetails),
+        updateGroup: processGroup(_updateGroup),
+        deleteGroup: processGroup(_deleteGroup),
+        //getAllEvents: processGroup(_getAllEvents),
+        addEvent: processGroup(_addEvent),
+        getEvent: processGroup(_getEvent),
+        removeEvent: processGroup(_removeEvent)
+    }
 
-// High-order function that gets the user ID
-function processUser(internalFunction) {
+    // High-order function that checks if the group selected belongs to the user
+    function processGroup(internalFunction) {
 
-    return function(token, ...args) {
+        return async function(token, groupID, ...args) {
+
+            // Error: groupID isn't a string
+            if(typeof groupID != 'string')
+                throw errors.INVALID_ARGUMENT("Group ID")
+
+            // Find the user with the given token
+            const userID = await userServices.getUserID(token)
+
+            // Find the selected group
+            const group = await groupsData.getGroupDetails(groupID)
+
+            // Error: Group doesn't exist
+            if(!group)
+                throw errors.NOT_FOUND(`Group ${groupID}`)
+
+            // Error: Group doesn't belong to user
+            if(group.userID !== userID)
+                throw errors.NOT_AUTHORIZED()
+
+            // Success
+            return internalFunction(group, ...args)
+
+        }
+    }
+
+    // Groups
+
+    async function getAllGroups(token) {
+
+        // Find the user with the given token
+        const userID = await userServices.getUserID(token)
+
+        // Get all the groups from that user
+        const groups = await groupsData.getAllGroups(userID)
+
+        // Success
+        return groups
         
-        // Find the user with the given token
-        const userID = userServices.getUserID(token)
-
-        // Success
-        if(userID)
-            return internalFunction(userID, ...args)
-
     }
-}
 
-// High-order function that checks if the group selected belongs to the user
-function processGroup(internalFunction) {
-
-    return function(token, groupID, ...args) {
+    async function createGroup(token, groupInfo) {
 
         // Find the user with the given token
-        const userID = userServices.getUserID(token)
+        const userID = await userServices.getUserID(token)
 
-        // Error: User with that token wasn't found
-        if(!userID) return
+        // Error: Body doesn't contain a 'name' property that is a string
+        if(typeof groupInfo.name != 'string')
+            throw errors.INVALID_ARGUMENT("Group name")
 
-        // Find the selected group and checks if it belongs to the user
-        const group = groups.find(group => {
-            return group.id == groupID && group.userID == userID
-        })
-
-        // Error: Group doesn't exist or it doesn't belong to user
-        if(!group) return
+        // Creates the new group
+        const newGroup = {
+            name: groupInfo.name,
+            description: groupInfo.description,
+            userID: userID,
+            nextEventID: 1,
+            events: []
+        }
+        
+        groupsData.createGroup(newGroup)
 
         // Success
-        return internalFunction(group, ...args)
-
+        return newGroup
+        
     }
-}
 
-export const getAllGroups = processUser(_getAllGroups)
-export const createGroup = processUser(_createGroup)
-export const getGroupDetails = processGroup(_getGroupDetails)
-export const updateGroup = processGroup(_updateGroup)
-export const deleteGroup = processGroup(_deleteGroup)
-export const getAllEvents = processGroup(_getAllEvents)
-export const addEvent = processGroup(_addEvent)
-export const getEvent = processGroup(_getEvent)
-export const removeEvent = processGroup(_removeEvent)
+    function _getGroupDetails(group) {
 
-// Groups
-
-function _getAllGroups(userID) {
-
-    // Get all the groups from that user
-    return groups.filter(group => group.userID == userID)
-
-}
-
-function _createGroup(userID, groupInfo) {
-
-    // Creates the new group
-    const newGroup = {
-        id: nextGroupID++,
-        name: groupInfo.name,
-        description: groupInfo.description,
-        userID: userID,
-        nextEventID: 1,
-        events: []
-    }
-    
-    // Pushes the new group into the array
-    groups.push(newGroup)
-
-    // Success
-    return newGroup
-    
-}
-
-function _getGroupDetails(group) {
-
-    return group
-
-}
-
-function _updateGroup(group, groupInfo) {
-
-    // Finds the index of the group selected
-    const groupIdx = groups.findIndex(g => g == group)
-
-    // Updates the 'name' and 'description' of the group selected
-    groups[groupIdx] = {
-
-        ...group,
-        name: groupInfo.name,
-        description: groupInfo.description
+        return group
 
     }
 
-    // Success
-    return groups[groupIdx]
+    function _updateGroup(group, groupInfo) {
 
-}
+        // Error: Name was given but it isn't a string
+        if(groupInfo.name && typeof groupInfo.name != 'string')
+            throw errors.INVALID_ARGUMENT("Group name")
 
-function _deleteGroup(group) {
+        // Error: Description was given but it isn't a string
+        if(groupInfo.description && typeof groupInfo.description != 'string')
+            throw errors.INVALID_ARGUMENT("Group description")
 
-    // Finds the index of the group selected
-    const groupIdx = groups.findIndex(g => g == group)
+        // Update the 'name' if it exists
+        if(groupInfo.name)
+            group.name = groupInfo.name
 
-    // Delete the group that index
-    groups.splice(groupIdx, 1)
+        // Update the 'description' if it exists
+        if(groupInfo.description)
+            group.description = groupInfo.description
 
-    // Success
-    return true
+        // Success
+        return groupsData.updateGroup(group)
 
-}
-
-
-// Group Events
-
-function _getAllEvents(group) {
-
-    return group.events
-
-}
-
-async function _addEvent(group, event) {
-
-    const newEvent = {
-        ...event,
-        localID: group.nextEventID++,
-        groupID: group.id
     }
 
-    // Pushes the event into the 'groups' array
-    group.events.push(newEvent)
+    async function _deleteGroup(group) {
 
-    // Success
-    return true
+        return await groupsData.deleteGroup(group.id)
 
-}
+    }
 
-function _getEvent(group, eventID) {
 
-    return group.events.find(event => event.localID == eventID)
+    // Group Events
 
-}
+    function _addEvent(group, event) {
 
-function _removeEvent(group, eventID) {
+        const newEvent = {
+            ...event,
+            id: group.nextEventID++,
+            groupID: group.id
+        }
 
-    // Finds the index of the group selected
-    const groupIdx = groups.findIndex(g => g == group)
+        // Pushes the event into the 'groups' array
+        group.events.push(newEvent)
 
-    // Find the index of the event selected
-    const eventIdx = groups[groupIdx].events.findIndex(event => event.localID == eventID)
+        // Adds the event
+        return groupsData.updateGroup(group)
 
-    // Error: Event not found
-    if(eventIdx == -1) return
+    }
 
-    // The new array of events (without the removed one)
-    const filteredEvents = group.events.filter(event => event.localID != eventID)
-    
-    // Update the event array
-    groups[groupIdx].events = filteredEvents
+    function _getEvent(group, eventID) {
 
-    // Success
-    return true
+        // Finds the event
+        const event = group.events.find(event => event.id == eventID)
+
+        // Error: Event not found
+        if(!event)
+            throw errors.NOT_FOUND(`Event ${eventID}`)
+
+        // Success
+        return event
+
+    }
+
+    function _removeEvent(group, eventID) {
+
+        // Updates the array of events
+        group.events = group.events.filter(event => event.id != eventID)
+
+        // Updates the group with updated array of events
+        return groupsData.updateGroup(group)
+
+    }
 
 }

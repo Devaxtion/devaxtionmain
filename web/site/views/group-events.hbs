@@ -1,0 +1,27 @@
+<a href="/groups/{{id}}/">
+    <button>Go back</button>
+</a>
+
+<h1>Group {{name}} events</h1>
+
+<h2>Add a new event:</h2>
+<form method="POST" action="/groups/{{id}}/events/">
+    <p>ID: <input type="text" name="id"></p>
+    <input type="submit" value="Add">
+</form>
+
+<hr>
+
+<section>
+    {{#each events}}
+
+        <section>
+            {{> eventPartial this}}
+            <a href="/groups/{{groupID}}/events/{{id}}">
+                <button>See details</button>
+            </a>
+            <hr>
+        </section>   
+
+    {{/each}}
+</section>

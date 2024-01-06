@@ -1,21 +1,43 @@
-import * as userServices from '../../services/user-services.mjs'
+import errorToHTTP from '../http-error-handling.mjs'
 
+export default function (userServices) {
+    if(!userServices)
+        throw errors.INVALID_ARGUMENT("userServices")
 
-export function createUser(req, rsp) {
+    return {
+        createUser: processErrors(_createUser)
+    }
 
-    // Gets the username requested from the user
-    const userName = req.body.username
+    // High-order function that processes the request
+    function processErrors(internalFunction) {
 
-    // Creates a new user with that username
-    const newUser = userServices.createUser(userName)
+        return async function(req, rsp) {
 
-    // Error 400: Username already exists
-    if (!newUser)
-        return rsp.status(400).json(`Username ${userName} already exists`)
+            try {
 
-    // Success
-    rsp.status(201).json({
-        status: `User created`,
-        user: newUser
-    })
+                return await internalFunction(req, rsp)
+
+            } catch (error) {
+                const rspError = errorToHTTP(error)
+                rsp.status(rspError.status).json(rspError.body)
+            }
+
+        }
+    }
+
+    async function _createUser(req, rsp) {
+
+        // Gets the username requested from the user
+        const username = req.body.username
+
+        // Creates a new user with that username
+        const newUser = await userServices.createUser(username)
+
+        // Success
+        rsp.status(201).json({
+            status: `User created`,
+            user: newUser
+        })
+    }
+
 }

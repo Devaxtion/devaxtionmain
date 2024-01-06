@@ -1,0 +1,24 @@
+<a href="/events">
+    <button>Go back</button>
+</a>
+
+<h1>Search events</h1>
+
+<hr>
+
+<form method="GET" action="/events/search/">
+    <h2>Filters:</h2>
+    <p>Name: <input type="text" name="name" value="{{name}}"></p>
+    <p>Size: <input type="text" name="s" value="{{size}}"></p>
+    <p>Page: <input type="text" name="p" value="{{page}}"></p>
+    <input type="submit" value="Apply">
+</form>
+
+<section>
+    {{#each events}}
+        <hr>
+        <section>
+            {{> eventDetailedPartial this}}
+        </section>
+    {{/each}}
+</section>
