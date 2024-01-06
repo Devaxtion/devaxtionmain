@@ -1,0 +1,535 @@
+openapi: 3.0.1
+info:
+  title: Events API
+  description: This is an API for SECA
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+  - description: Localhost server for testing API
+    url: http://localhost:1904
+security:
+  - bearerAuth: []
+tags:
+- name: Events
+- name: Groups
+- name: Users
+paths:
+  /users:
+    description: The resource that contains all the users
+    post:
+      tags:
+      - Users
+      summary: Creates a user
+      description: Creates a new user
+      operationId: addUser
+      security: []
+      requestBody:
+        description: User to add
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewUser'
+        required: true
+      responses:
+        201:
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserCreated'
+        400:
+          content: {}
+  /events/popular:
+    description: Resource that searches the popular events
+    get:
+      tags:
+      - Events
+      summary: Get Popular Events
+      description: It gives the most popular events
+      operationId: getPopularEvents
+      security: []
+      parameters:
+        - name: s
+          in: query
+          description: Number of events to return
+          schema:
+            default: 30
+            minimum: 1
+            type: integer
+        - name: p
+          in: query
+          description: The page number
+          schema:
+            default: 1
+            minimum: 1
+            type: integer
+      responses:
+        200:
+          description: Get the popular events, with the specified criteria and pagination 
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TMEvent'
+        400:
+          content: {}
+  /events/search/{name}:
+    get:
+      tags:
+      - Events
+      summary: Search events by name
+      operationId: searchEvents
+      security: []
+      parameters:
+        - name: name
+          in: path
+          description: Name of the event to search
+          required: true
+          schema:
+            type: string
+        - name: s
+          in: query
+          description: Number of events to return
+          schema:
+            default: 30
+            minimum: 1
+            type: integer
+        - name: p
+          in: query
+          description: The page number
+          schema:
+            default: 1
+            minimum: 1
+            type: integer
+      responses:
+        200:
+          description: Get the searched events
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TMEvent'
+        400:
+          content: {}
+        404:
+          content: {}
+  /groups:
+    get:
+      tags:
+      - Groups
+      summary: Get all the groups
+      description: Get all the groups from the user
+      operationId: getAllGroups
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Get all groups
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Group'
+        400:
+          content: {}
+        404:
+          content: {}
+    post:
+      tags:
+      - Groups
+      summary: Creates a group
+      description: Creates a group for the user
+      operationId: createGroup
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: Group name and description
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewGroup'
+        required: true
+      responses:
+        201:
+          description: Group created
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewGroupCreated'
+        400:
+          content: {}
+  /groups/{id}:
+    get:
+      tags:
+      - Groups
+      summary: Get a group
+      description: By passing in the correct ID, it shows the group data
+      operationId: getGroup
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: ID of the group
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Get the group
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: '#/components/schemas/Group'
+        400:
+          content: {}
+        404:
+          content: {}
+    put:
+      tags:
+      - Groups
+      summary: Update group by ID
+      operationId: updateGroup
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: ID of the group
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Group name and description
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewGroup'
+        required: true
+      responses:
+        200:
+          description: Group updated
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupUpdated'
+        400:
+          content: {}
+        404:
+          content: {}
+    delete:
+      tags:
+      - Groups
+      summary: Delete group by ID
+      operationId: deleteGroup
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: ID of the group
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Group deleted
+          content: {}
+        400:
+          content: {}
+        404:
+          content: {}
+  /groups/{id}/events:
+    get:
+      tags:
+      - Groups
+      summary: Get all events of a group by ID
+      operationId: getAllEvents
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: ID of the group
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Shows all events from that group
+          content: 
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GroupEvent"
+        400:
+          content: {}
+        404:
+          content: {}
+    post:
+      tags:
+      - Groups
+      summary: Add event to group with the specified ID
+      operationId: addEvent
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: ID of the group
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Event ID
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewGroupEvent'
+        required: true
+      responses:
+        200:
+          description: Event added to the group
+          content: {}
+        400:
+          content: {}
+        404:
+          content: {}
+  /groups/{id}/events/{eventid}:
+    get:
+      tags:
+      - Groups
+      summary: Get event details by ID within a group
+      operationId: getEvent
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: ID of the group
+          required: true
+          schema:
+            type: integer
+        - name: eventid
+          in: path
+          description: ID of the event
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Shows the specified event from the specified group
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupEvent'
+        400:
+          content: {}
+        404:
+          content: {}
+    delete:
+      tags:
+      - Groups
+      summary: Remove event from group by ID
+      operationId: removeEvent
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: ID of the group
+          required: true
+          schema:
+            type: integer
+        - name: eventid
+          in: path
+          description: ID of the event
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Event removed from the group
+          content: {}
+        400:
+          content: {}
+        404:
+          content: {}
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  schemas:
+    User:
+      allOf: 
+        - $ref: "#/components/schemas/NewUser"
+        - type: object
+          properties:
+            id:
+              type: integer
+              example: 2
+            token:
+              type: string
+              format: uuid
+              example: "3f667fb7-9faa-4da4-9663-3ad50f60766b"
+    NewUser:
+      type: object
+      required:
+      - username
+      properties:
+        username:
+          type: string
+          example: postmanuser
+    NewUserCreated:
+      required:
+      - status
+      - user
+      type: user
+      properties:
+        status:
+          type: string
+          example: User created
+        user:
+          $ref: '#/components/schemas/User'
+    TMEvent:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: G5v0Z9Yc3DYBk
+        name:
+          type: string
+          example: "New Orleans Pelicans vs. Phoenix Suns"
+        date:
+          type: string
+          example: "2024-01-28T23:00:00Z"
+        segment:
+          type: string
+          example: Sports
+        genre:
+          type: string
+          example: Basketball
+    Group:
+      allOf: 
+        - $ref: "#/components/schemas/NewGroup"
+        - type: object
+          properties:
+            id:
+              type: integer
+              example: 2
+            userID:
+              type: integer
+              example: 4
+            nextEventID:
+              type: integer
+              example: 5
+            events:
+              type: array
+              items:
+                $ref: "#/components/schemas/GroupEvent"
+    NewGroup:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Favorite events"
+        description:
+          type: string
+          example: "A list of my favorite events of this month"
+    NewGroupCreated:
+      required:
+      - status
+      - group
+      type: object
+      properties:
+        status:
+          type: string
+          example: Group created
+        group:
+          $ref: '#/components/schemas/Group'
+    GroupUpdated:
+      required:
+      - status
+      - group
+      type: object
+      properties:
+        status:
+          type: string
+          example: Group updated
+        group:
+          $ref: '#/components/schemas/Group'
+    GroupEvent:
+      allOf: 
+        - $ref: "#/components/schemas/NewGroupEvent"
+        - type: object
+          properties:
+            name:
+              type: string
+              example: "New Orleans Pelicans vs. Phoenix Suns"
+            date:
+              type: string
+              example: "2024-01-28T23:00:00Z"
+            segment:
+              type: string
+              example: Sports
+            genre:
+              type: string
+              example: Basketball
+            localID:
+              type: integer
+              example: 3
+            groupID:
+              type: integer
+              example: 3
+    NewGroupEvent:
+      type: object
+      properties:
+        id:
+          type: string
+          example: G5v0Z9Yc3DYBk
+    MissingParameter:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Missing a required parameter"
+    InvalidBody:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Invalid body content"
+    NotFound: 
+      type: object
+      properties:
+        uri:
+          type: string
+          format: uri
+          example: "/groups/2"
+        description:
+          type: string
+          example: "Group 2 not found"
+  responses: 
+    404NotFound:
+      description: "Resource not found"
+      content: 
+        application/json:
+          schema: 
+            $ref: "#/components/schemas/NotFound"
+    400BadRequest:
+      description: "Invalid Request because of a missing parameter or invalid body content"
+      content: 
+        application/json:
+          schema: 
+            oneOf:
+              - $ref: "#/components/schemas/MissingParameter"
+              - $ref: "#/components/schemas/InvalidBody"

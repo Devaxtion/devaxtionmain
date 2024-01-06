@@ -1,0 +1,436 @@
+{
+	"info": {
+		"_postman_id": "485c08a6-2918-4492-9964-afe4c2ab1a2d",
+		"name": "IPW A2 API Requests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "31018589"
+	},
+	"item": [
+		{
+			"name": "Groups",
+			"item": [
+				{
+					"name": "Events",
+					"item": [
+						{
+							"name": "Get All Events",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "936cdcf9-6f2f-4ef6-aec8-f8c8bfea1471",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:1904/groups/3/events",
+									"host": [
+										"localhost"
+									],
+									"port": "1904",
+									"path": [
+										"groups",
+										"3",
+										"events"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Add Event",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "936cdcf9-6f2f-4ef6-aec8-f8c8bfea1471",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 1\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:1904/groups/3/events",
+									"host": [
+										"localhost"
+									],
+									"port": "1904",
+									"path": [
+										"groups",
+										"3",
+										"events"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Event",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "936cdcf9-6f2f-4ef6-aec8-f8c8bfea1471",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:1904/groups/2/events/1",
+									"host": [
+										"localhost"
+									],
+									"port": "1904",
+									"path": [
+										"groups",
+										"2",
+										"events",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Remove Event",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "936cdcf9-6f2f-4ef6-aec8-f8c8bfea1471",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "localhost:1904/groups/1/events/1",
+									"host": [
+										"localhost"
+									],
+									"port": "1904",
+									"path": [
+										"groups",
+										"1",
+										"events",
+										"1"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Get All Groups",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "936cdcf9-6f2f-4ef6-aec8-f8c8bfea1471",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:1904/groups",
+							"host": [
+								"localhost"
+							],
+							"port": "1904",
+							"path": [
+								"groups"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Group",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "936cdcf9-6f2f-4ef6-aec8-f8c8bfea1471",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Learn HTTP\",\r\n    \"description\": \"Learning HTTP is very important\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:1904/groups",
+							"host": [
+								"localhost"
+							],
+							"port": "1904",
+							"path": [
+								"groups"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Group Details",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "936cdcf9-6f2f-4ef6-aec8-f8c8bfea1471",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "localhost:1904/groups/10",
+							"host": [
+								"localhost"
+							],
+							"port": "1904",
+							"path": [
+								"groups",
+								"10"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Group",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "936cdcf9-6f2f-4ef6-aec8-f8c8bfea1471",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Learn HTTP\",\r\n    \"description\": \"Learning HTTP is very important\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:1904/groups/7",
+							"host": [
+								"localhost"
+							],
+							"port": "1904",
+							"path": [
+								"groups",
+								"7"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "936cdcf9-6f2f-4ef6-aec8-f8c8bfea1471",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:1904/groups/1033",
+							"host": [
+								"localhost"
+							],
+							"port": "1904",
+							"path": [
+								"groups",
+								"1033"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Events",
+			"item": [
+				{
+					"name": "Get Popular Events",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:1904/events/popular?s=2&p=2",
+							"host": [
+								"localhost"
+							],
+							"port": "1904",
+							"path": [
+								"events",
+								"popular"
+							],
+							"query": [
+								{
+									"key": "s",
+									"value": "2",
+									"description": "Default: 30"
+								},
+								{
+									"key": "p",
+									"value": "2",
+									"description": "Default: 1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search Events",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:1904/events/search/H",
+							"host": [
+								"localhost"
+							],
+							"port": "1904",
+							"path": [
+								"events",
+								"search",
+								"H"
+							],
+							"query": [
+								{
+									"key": "s",
+									"value": "2",
+									"description": "Default: 30",
+									"disabled": true
+								},
+								{
+									"key": "p",
+									"value": "2",
+									"description": "Default: 1",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Create User",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"postmanuser\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:1904/users",
+							"host": [
+								"localhost"
+							],
+							"port": "1904",
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "main",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:1904",
+					"host": [
+						"localhost"
+					],
+					"port": "1904"
+				}
+			},
+			"response": []
+		}
+	]
+}
